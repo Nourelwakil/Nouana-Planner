@@ -109,7 +109,7 @@ const AssignmentModal: FC<AssignmentModalProps> = ({ isOpen, onClose, onSave, co
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="assignment-modal-title" className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
-        <div ref={modalRef} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg flex flex-col max-h-[90vh] ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
+        <div ref={modalRef} style={{ maxHeight: 'calc(var(--vh, 1vh) * 90)' }} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg flex flex-col ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
             <form onSubmit={handleSubmit} className="flex flex-col h-full">
                 <div className="p-8 pb-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                     <h2 id="assignment-modal-title" className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -241,7 +241,7 @@ const CourseModal: FC<CourseModalProps> = ({ isOpen, onClose, onSave, courseToEd
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="course-modal-title" className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
-        <div ref={modalRef} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md flex flex-col max-h-[90vh] ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
+        <div ref={modalRef} style={{ maxHeight: 'calc(var(--vh, 1vh) * 90)' }} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md flex flex-col ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
             <form onSubmit={handleSubmit} className="flex flex-col h-full">
                 <div className="p-8 pb-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                     <h2 id="course-modal-title" className="text-2xl font-bold text-gray-900 dark:text-white">

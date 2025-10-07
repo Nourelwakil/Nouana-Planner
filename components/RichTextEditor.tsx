@@ -63,41 +63,34 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange 
   
   const updateToolbarStates = useCallback(() => {
     const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || !editorRef.current || !selection.anchorNode || !editorRef.current.contains(selection.anchorNode)) {
+    if (!selection || selection.rangeCount === 0 || !editorRef.current) {
       return;
     }
-
-    let node = selection.anchorNode;
-    // If the selection is on a text node, start checking from its parent element.
-    if (node && node.nodeType === Node.TEXT_NODE) {
-      node = node.parentNode;
-    }
-
-    let isHighlighted = false;
-    let highlightNode = node;
-    // Traverse up the DOM from the current selection to find an inline background-color style.
-    // This is more reliable than queryCommandValue('backColor').
-    while (highlightNode && highlightNode !== editorRef.current) {
-      if (highlightNode.nodeType === Node.ELEMENT_NODE) {
-        const element = highlightNode as HTMLElement;
-        const bgColor = element.style.backgroundColor;
-        if (bgColor && bgColor !== 'transparent' && bgColor !== 'rgba(0, 0, 0, 0)') {
-          isHighlighted = true;
-          break;
-        }
-      }
-      highlightNode = highlightNode.parentNode;
-    }
     
-    let isList = false;
-    let listNode = node;
-    while (listNode && listNode !== editorRef.current) {
-        if (listNode.nodeName === 'LI') {
-            isList = true;
-            break;
-        }
-        listNode = listNode.parentNode;
+    const range = selection.getRangeAt(0);
+    const container = range.commonAncestorContainer;
+
+    if (!editorRef.current.contains(container)) {
+        return;
     }
+
+    // A helper function to check if the current selection or its ancestor has a specific tag name or style
+    const checkAncestor = (node: Node | null, condition: (element: HTMLElement) => boolean): boolean => {
+        while (node && node !== editorRef.current) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                if (condition(node as HTMLElement)) return true;
+            }
+            node = node.parentNode;
+        }
+        return false;
+    };
+    
+    const isHighlighted = checkAncestor(container, el => {
+        const bgColor = el.style.backgroundColor;
+        return !!(bgColor && bgColor !== 'transparent' && bgColor !== 'rgba(0, 0, 0, 0)');
+    });
+
+    const isList = checkAncestor(container, el => ['UL', 'OL', 'LI'].includes(el.nodeName));
 
     setCommandStates({
       bold: document.queryCommandState('bold'),
