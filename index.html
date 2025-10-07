@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <!-- Viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -40,28 +41,23 @@
     </script>
     <style>
       /* --- Animation Keyframes for Modals --- */
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      @keyframes fadeOut {
-        from { opacity: 1; }
-        to { opacity: 0; }
-      }
-      @keyframes scaleAndSlideUp {
-        from { transform: translateY(20px) scale(0.98); opacity: 0; }
-        to { transform: translateY(0) scale(1); opacity: 1; }
-      }
-      @keyframes scaleAndSlideDown {
-        from { transform: translateY(0) scale(1); opacity: 1; }
-        to { transform: translateY(20px) scale(0.98); opacity: 0; }
-      }
+      @-webkit-keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      
+      @-webkit-keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+      @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+      @-webkit-keyframes scaleAndSlideUp { from { -webkit-transform: translateY(20px) scale(0.98); transform: translateY(20px) scale(0.98); opacity: 0; } to { -webkit-transform: translateY(0) scale(1); transform: translateY(0) scale(1); opacity: 1; } }
+      @keyframes scaleAndSlideUp { from { transform: translateY(20px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+
+      @-webkit-keyframes scaleAndSlideDown { from { -webkit-transform: translateY(0) scale(1); transform: translateY(0) scale(1); opacity: 1; } to { -webkit-transform: translateY(20px) scale(0.98); transform: translateY(20px) scale(0.98); opacity: 0; } }
+      @keyframes scaleAndSlideDown { from { transform: translateY(0) scale(1); opacity: 1; } to { transform: translateY(20px) scale(0.98); opacity: 0; } }
 
       /* --- Animation Utility Classes --- */
-      .animate-fade-in { animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-      .animate-fade-out { animation: fadeOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-      .animate-scale-slide-up { animation: scaleAndSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-      .animate-scale-slide-down { animation: scaleAndSlideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+      .animate-fade-in { -webkit-animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+      .animate-fade-out { -webkit-animation: fadeOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; animation: fadeOut 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+      .animate-scale-slide-up { -webkit-animation: scaleAndSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; animation: scaleAndSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+      .animate-scale-slide-down { -webkit-animation: scaleAndSlideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; animation: scaleAndSlideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
     </style>
   <script type="importmap">
 {
@@ -73,6 +69,8 @@
   }
 }
 </script>
+<!-- Add CoreJS Polyfill for broader compatibility -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.37.1/minified.js" integrity="sha512-3p3d3O2Y6lK5N3h2nS/i8B2sBAw2tw5eohhRfBGVf2ylaxPZ2pQz2R2/JVfTb8N0X1YpM3HUI3hB4YjB8sSgSw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!-- Add Babel Standalone for in-browser TSX/JSX transpilation -->
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <link rel="stylesheet" href="/index.css">

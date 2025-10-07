@@ -74,25 +74,36 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange 
     }
 
     let isHighlighted = false;
+    let highlightNode = node;
     // Traverse up the DOM from the current selection to find an inline background-color style.
     // This is more reliable than queryCommandValue('backColor').
-    while (node && node !== editorRef.current) {
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        const element = node as HTMLElement;
+    while (highlightNode && highlightNode !== editorRef.current) {
+      if (highlightNode.nodeType === Node.ELEMENT_NODE) {
+        const element = highlightNode as HTMLElement;
         const bgColor = element.style.backgroundColor;
         if (bgColor && bgColor !== 'transparent' && bgColor !== 'rgba(0, 0, 0, 0)') {
           isHighlighted = true;
           break;
         }
       }
-      node = node.parentNode;
+      highlightNode = highlightNode.parentNode;
+    }
+    
+    let isList = false;
+    let listNode = node;
+    while (listNode && listNode !== editorRef.current) {
+        if (listNode.nodeName === 'LI') {
+            isList = true;
+            break;
+        }
+        listNode = listNode.parentNode;
     }
 
     setCommandStates({
       bold: document.queryCommandState('bold'),
       italic: document.queryCommandState('italic'),
       underline: document.queryCommandState('underline'),
-      ul: document.queryCommandState('insertUnorderedList'),
+      ul: isList,
       highlight: isHighlighted,
     });
   }, []);

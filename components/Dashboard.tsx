@@ -108,50 +108,54 @@ const AssignmentModal: FC<AssignmentModalProps> = ({ isOpen, onClose, onSave, co
   if (!isOpen) return null;
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="assignment-modal-title" className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
-      <div ref={modalRef} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-lg ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
-        <h2 id="assignment-modal-title" className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            {isEditMode ? 'Edit Assignment' : 'Add New Assignment'}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
-            <input type="text" id="title" value={title} onChange={e => setTitle(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
-          </div>
-          <div>
-            <label htmlFor="course" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Course</label>
-            <select id="course" value={courseId} onChange={e => setCourseId(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white">
-              {courses.map(course => <option key={course.id} value={course.id}>{course.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
-            <input type="date" id="dueDate" value={dueDate} onChange={e => setDueDate(e.target.value)} max="2999-12-31" required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
-          </div>
-           <div>
-            <label htmlFor="priority" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
-            <select id="priority" value={priority} onChange={e => setPriority(e.target.value as Priority)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white">
-                <option value={Priority.Low}>Low</option>
-                <option value={Priority.Medium}>Medium</option>
-                <option value={Priority.High}>High</option>
-            </select>
-          </div>
-           <div>
-            <label htmlFor="estimatedHours" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Estimated Hours</label>
-            <input type="number" id="estimatedHours" value={estimatedHours} min="0" step="0.5" onChange={e => setEstimatedHours(Number(e.target.value))} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
-          </div>
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-            <RichTextEditor value={description} onChange={setDescription} />
-          </div>
-          <div className="flex justify-end space-x-4 pt-4">
-            <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 transition-colors">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                {isEditMode ? 'Save Changes' : 'Save Assignment'}
-            </button>
-          </div>
-        </form>
-      </div>
+    <div role="dialog" aria-modal="true" aria-labelledby="assignment-modal-title" className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
+        <div ref={modalRef} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg flex flex-col max-h-[90vh] ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
+            <form onSubmit={handleSubmit} className="flex flex-col h-full">
+                <div className="p-8 pb-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <h2 id="assignment-modal-title" className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {isEditMode ? 'Edit Assignment' : 'Add New Assignment'}
+                    </h2>
+                </div>
+                <div className="p-8 space-y-4 overflow-y-auto flex-grow">
+                    <div>
+                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                        <input type="text" id="title" value={title} onChange={e => setTitle(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
+                    </div>
+                    <div>
+                        <label htmlFor="course" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Course</label>
+                        <select id="course" value={courseId} onChange={e => setCourseId(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white">
+                        {courses.map(course => <option key={course.id} value={course.id}>{course.name}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
+                        <input type="date" id="dueDate" value={dueDate} onChange={e => setDueDate(e.target.value)} max="2999-12-31" required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
+                    </div>
+                    <div>
+                        <label htmlFor="priority" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
+                        <select id="priority" value={priority} onChange={e => setPriority(e.target.value as Priority)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white">
+                            <option value={Priority.Low}>Low</option>
+                            <option value={Priority.Medium}>Medium</option>
+                            <option value={Priority.High}>High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="estimatedHours" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Estimated Hours</label>
+                        <input type="number" id="estimatedHours" value={estimatedHours} min="0" step="0.5" onChange={e => setEstimatedHours(Number(e.target.value))} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
+                    </div>
+                    <div>
+                        <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                        <RichTextEditor value={description} onChange={setDescription} />
+                    </div>
+                </div>
+                <div className="flex justify-end space-x-4 p-8 pt-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 transition-colors">Cancel</button>
+                    <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        {isEditMode ? 'Save Changes' : 'Save Assignment'}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
   );
 };
@@ -236,36 +240,40 @@ const CourseModal: FC<CourseModalProps> = ({ isOpen, onClose, onSave, courseToEd
   if (!isOpen) return null;
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="course-modal-title" className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
-      <div ref={modalRef} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
-        <h2 id="course-modal-title" className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-          {isEditMode ? 'Edit Course' : 'Add New Course'}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="courseName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Course Name</label>
-            <input type="text" id="courseName" value={name} onChange={e => setName(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
-          </div>
-          <div>
-            <label htmlFor="courseCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Course Code (e.g., CS101)</label>
-            <input type="text" id="courseCode" value={code} onChange={e => setCode(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Color</label>
-            <div className="mt-2 grid grid-cols-8 gap-2">
-              {COURSE_COLORS.map(c => (
-                <button key={c} type="button" onClick={() => setColor(c)} className={`w-8 h-8 rounded-full transition-transform hover:scale-110 ${c} ${color === c ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-gray-800' : ''}`}></button>
-              ))}
-            </div>
-          </div>
-          <div className="flex justify-end space-x-4 pt-4">
-            <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 transition-colors">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-              {isEditMode ? 'Save Changes' : 'Save Course'}
-            </button>
-          </div>
-        </form>
-      </div>
+    <div role="dialog" aria-modal="true" aria-labelledby="course-modal-title" className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4 ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
+        <div ref={modalRef} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md flex flex-col max-h-[90vh] ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
+            <form onSubmit={handleSubmit} className="flex flex-col h-full">
+                <div className="p-8 pb-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <h2 id="course-modal-title" className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {isEditMode ? 'Edit Course' : 'Add New Course'}
+                    </h2>
+                </div>
+                <div className="p-8 space-y-4 overflow-y-auto flex-grow">
+                    <div>
+                        <label htmlFor="courseName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Course Name</label>
+                        <input type="text" id="courseName" value={name} onChange={e => setName(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
+                    </div>
+                    <div>
+                        <label htmlFor="courseCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Course Code (e.g., CS101)</label>
+                        <input type="text" id="courseCode" value={code} onChange={e => setCode(e.target.value)} required className="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Color</label>
+                        <div className="mt-2 grid grid-cols-8 gap-2">
+                        {COURSE_COLORS.map(c => (
+                            <button key={c} type="button" onClick={() => setColor(c)} className={`w-8 h-8 rounded-full transition-transform hover:scale-110 ${c} ${color === c ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-gray-800' : ''}`}></button>
+                        ))}
+                        </div>
+                    </div>
+                </div>
+                <div className="flex justify-end space-x-4 p-8 pt-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <button type="button" onClick={handleClose} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 transition-colors">Cancel</button>
+                    <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        {isEditMode ? 'Save Changes' : 'Save Course'}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
   );
 };
