@@ -270,6 +270,69 @@ const CourseModal: FC<CourseModalProps> = ({ isOpen, onClose, onSave, courseToEd
   );
 };
 
+interface ResetConfirmationModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+}
+
+const ResetConfirmationModal: FC<ResetConfirmationModalProps> = ({ isOpen, onClose, onConfirm }) => {
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setIsAnimatingOut(true);
+    setTimeout(() => {
+      onClose();
+      setIsAnimatingOut(false);
+    }, 300);
+  }, [onClose]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, handleClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div role="alertdialog" aria-modal="true" aria-labelledby="reset-modal-title" className={`fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
+      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md text-center ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
+        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/50 mb-4">
+            <i className="fa-solid fa-triangle-exclamation text-2xl text-red-600 dark:text-red-300"></i>
+        </div>
+        <h2 id="reset-modal-title" className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          Are you absolutely sure?
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          This action cannot be undone. All of your courses, assignments, and study session data will be permanently deleted.
+        </p>
+        <div className="flex justify-center space-x-4">
+          <button type="button" onClick={handleClose} className="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 transition-colors">
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="px-6 py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-800"
+          >
+            Yes, delete everything
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 const completionMilestones = [
   { threshold: 64, subtitle: "Legendary status unlocked!", gradient: "bg-gradient-to-br from-rose-400 via-fuchsia-500 to-indigo-500", iconEffect: "text-yellow-300 animate-pulse" },
   { threshold: 32, subtitle: "Master level! Truly dedicated.", gradient: "bg-gradient-to-br from-purple-500 to-pink-500", iconEffect: "text-pink-200" },
@@ -302,6 +365,7 @@ export const Dashboard: React.FC = () => {
   
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   
   const [assignmentToEdit, setAssignmentToEdit] = useState<Assignment | null>(null);
   const [courseToEdit, setCourseToEdit] = useState<Course | null>(null);
@@ -472,6 +536,17 @@ export const Dashboard: React.FC = () => {
     );
   };
 
+  const handleConfirmReset = () => {
+    setAssignments([]);
+    setCourses([]);
+    setStudySessions([]);
+    setIsResetModalOpen(false);
+    setToast({
+        message: "Planner has been reset successfully.",
+        type: 'success',
+    });
+  };
+
   const selectedCourse = useMemo(() => {
       if (!selectedAssignment) return null;
       return courses.find(c => c.id === selectedAssignment.courseId) || null;
@@ -482,9 +557,19 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400">Welcome! Here's your study overview.</p>
+      <header className="flex flex-wrap justify-between items-center gap-4 mb-8">
+        <div>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400">Welcome! Here's your study overview.</p>
+        </div>
+        <button
+            onClick={() => setIsResetModalOpen(true)}
+            className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-900 flex items-center space-x-2"
+            title="Reset all planner data"
+        >
+            <i className="fa-solid fa-trash-can"></i>
+            <span>Reset Planner</span>
+        </button>
       </header>
       
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
@@ -567,6 +652,11 @@ export const Dashboard: React.FC = () => {
           course={selectedCourse}
           onEdit={handleEditFromDetail}
           onStatusChange={handleAssignmentStatusChange}
+      />
+      <ResetConfirmationModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={handleConfirmReset}
       />
     </div>
   );
