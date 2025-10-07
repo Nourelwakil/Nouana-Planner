@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Assignment, Course, Priority, Status } from '../types';
 import { ClockIcon } from './icons';
 
@@ -49,7 +49,6 @@ export const AssignmentDetailModal: FC<AssignmentDetailModalProps> = ({ isOpen, 
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const [localStatus, setLocalStatus] = useState<Status | undefined>();
   
-  // Destructure after state to avoid stale closures in handlers
   const { onClose, assignment, course, onStatusChange } = props;
 
   useEffect(() => {
@@ -60,15 +59,29 @@ export const AssignmentDetailModal: FC<AssignmentDetailModalProps> = ({ isOpen, 
   
   const hasChanges = isOpen && assignment !== null && localStatus !== assignment.status;
 
-  const handleClose = () => {
-    if (hasChanges) return; // Prevent closing if there are changes
+  const handleClose = useCallback(() => {
+    if (hasChanges) return;
     
     setIsAnimatingOut(true);
     setTimeout(() => {
       onClose();
       setIsAnimatingOut(false);
     }, 300);
-  };
+  }, [onClose, hasChanges]);
+  
+   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            handleClose();
+        }
+    };
+    if (isOpen) {
+        window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, handleClose]);
   
   const handleEdit = () => {
     if (assignment) {
@@ -108,12 +121,12 @@ export const AssignmentDetailModal: FC<AssignmentDetailModalProps> = ({ isOpen, 
   const currentStatus = localStatus || assignment.status;
 
   return (
-    <div className={`fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
+    <div role="dialog" aria-modal="true" aria-labelledby="detail-modal-title" className={`fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
       <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl transform transition-all flex flex-col ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
         <div className="p-8 pb-0">
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{assignment.title}</h2>
+                    <h2 id="detail-modal-title" className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{assignment.title}</h2>
                     <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
                         {course && (
                             <div className="flex items-center">

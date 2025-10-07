@@ -1,0 +1,16 @@
+{
+  "short_name": "Nouana",
+  "name": "Nouana Planner",
+  "description": "Nouana Planner: Plan smart. Study strong. A minimalist, student-focused Study Planner to manage assignments and track study sessions with a built-in Pomodoro timer.",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2563EB",
+  "background_color": "#f3f4f6"
+}

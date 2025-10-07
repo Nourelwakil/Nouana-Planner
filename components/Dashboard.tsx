@@ -1,15 +1,16 @@
-import React, { useState, useMemo, FC, useRef, useEffect } from 'react';
+import React, { useState, useMemo, FC, useRef, useEffect, useCallback } from 'react';
 import { Assignment, Course, Status, StudySession, Priority } from '../types';
 import { DashboardCard } from './DashboardCard';
 import { PomodoroTimer } from './PomodoroTimer';
 import { BookOpenIcon, CheckCircleIcon, ClockIcon, ExclamationCircleIcon } from './icons';
-import { COURSES, ASSIGNMENTS, STUDY_SESSIONS } from '../constants';
+import { SAMPLE_COURSES, SAMPLE_ASSIGNMENTS } from '../constants';
 import { WeeklyMatrix } from './WeeklyMatrix';
 import { RichTextEditor } from './RichTextEditor';
 import { AssignmentDetailModal } from './AssignmentDetailModal';
 import { CourseProgressList } from './CourseProgressList';
 import { CourseAssignmentsView } from './CourseAssignmentsView';
 import { Toast } from './Toast';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 // Modal component for adding or editing an assignment
 interface AssignmentModalProps {
@@ -29,9 +30,18 @@ const AssignmentModal: FC<AssignmentModalProps> = ({ isOpen, onClose, onSave, co
   const [priority, setPriority] = useState<Priority>(Priority.Medium);
   const [estimatedHours, setEstimatedHours] = useState(1);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
   
   const isEditMode = !!assignmentToEdit;
   
+  const handleClose = useCallback(() => {
+    setIsAnimatingOut(true);
+    setTimeout(() => {
+        onClose();
+        setIsAnimatingOut(false);
+    }, 300); // Duration should match animation duration
+  }, [onClose]);
+
   useEffect(() => {
     if (isOpen) {
         if (isEditMode && assignmentToEdit) {
@@ -49,16 +59,26 @@ const AssignmentModal: FC<AssignmentModalProps> = ({ isOpen, onClose, onSave, co
             setEstimatedHours(1);
             setCourseId(defaultCourseId || courses[0]?.id || '');
         }
+        setTimeout(() => {
+          modalRef.current?.querySelector('input')?.focus();
+        }, 100);
     }
   }, [isOpen, isEditMode, assignmentToEdit, courses, defaultCourseId]);
+  
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            handleClose();
+        }
+    };
+    if (isOpen) {
+        window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, handleClose]);
 
-  const handleClose = () => {
-    setIsAnimatingOut(true);
-    setTimeout(() => {
-        onClose();
-        setIsAnimatingOut(false);
-    }, 300); // Duration should match animation duration
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,9 +108,9 @@ const AssignmentModal: FC<AssignmentModalProps> = ({ isOpen, onClose, onSave, co
   if (!isOpen) return null;
 
   return (
-    <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
-      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-lg ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <div role="dialog" aria-modal="true" aria-labelledby="assignment-modal-title" className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
+      <div ref={modalRef} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-lg ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
+        <h2 id="assignment-modal-title" className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
             {isEditMode ? 'Edit Assignment' : 'Add New Assignment'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -154,8 +174,17 @@ const CourseModal: FC<CourseModalProps> = ({ isOpen, onClose, onSave, courseToEd
   const [code, setCode] = useState('');
   const [color, setColor] = useState(COURSE_COLORS[0]);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
   
   const isEditMode = !!courseToEdit;
+  
+  const handleClose = useCallback(() => {
+    setIsAnimatingOut(true);
+    setTimeout(() => {
+        onClose();
+        setIsAnimatingOut(false);
+    }, 300);
+  }, [onClose]);
 
   useEffect(() => {
     if (isOpen) {
@@ -168,16 +197,26 @@ const CourseModal: FC<CourseModalProps> = ({ isOpen, onClose, onSave, courseToEd
         setCode('');
         setColor(COURSE_COLORS[0]);
       }
+      setTimeout(() => {
+          modalRef.current?.querySelector('input')?.focus();
+      }, 100);
     }
   }, [isOpen, isEditMode, courseToEdit]);
   
-  const handleClose = () => {
-    setIsAnimatingOut(true);
-    setTimeout(() => {
-        onClose();
-        setIsAnimatingOut(false);
-    }, 300);
-  };
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            handleClose();
+        }
+    };
+    if (isOpen) {
+        window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, handleClose]);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,9 +236,9 @@ const CourseModal: FC<CourseModalProps> = ({ isOpen, onClose, onSave, courseToEd
   if (!isOpen) return null;
 
   return (
-    <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
-      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+    <div role="dialog" aria-modal="true" aria-labelledby="course-modal-title" className={`fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
+      <div ref={modalRef} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 w-full max-w-md ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
+        <h2 id="course-modal-title" className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
           {isEditMode ? 'Edit Course' : 'Add New Course'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -257,9 +296,9 @@ const getCompletionCardStyle = (hours: number) => {
 
 
 export const Dashboard: React.FC = () => {
-  const [assignments, setAssignments] = useState<Assignment[]>(ASSIGNMENTS);
-  const [courses, setCourses] = useState<Course[]>(COURSES);
-  const [studySessions, setStudySessions] = useState<StudySession[]>(STUDY_SESSIONS);
+  const [assignments, setAssignments] = useLocalStorage<Assignment[]>('assignments', SAMPLE_ASSIGNMENTS);
+  const [courses, setCourses] = useLocalStorage<Course[]>('courses', SAMPLE_COURSES);
+  const [studySessions, setStudySessions] = useLocalStorage<StudySession[]>('studySessions', []);
   
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);

@@ -1,7 +1,5 @@
-import { Course, Assignment, Priority, Status, StudySession } from './types';
+import { Course, Assignment } from './types';
 
-export const COURSES: Course[] = [];
+export const SAMPLE_COURSES: Course[] = [];
 
-export const ASSIGNMENTS: Assignment[] = [];
-
-export const STUDY_SESSIONS: StudySession[] = [];
+export const SAMPLE_ASSIGNMENTS: Assignment[] = [];

@@ -84,7 +84,7 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ assignments, cours
         body = "Time to get back to it!";
     }
     
-    new Notification(title, { body, icon: '/vite.svg' });
+    new Notification(title, { body, icon: '/icon.svg' });
   }, [notificationPermission]);
 
   const switchMode = useCallback((newMode: Mode) => {
@@ -242,7 +242,7 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ assignments, cours
           </button>
         ))}
       </div>
-      <div className="relative w-48 h-48 mb-6">
+      <div className="relative w-40 h-40 sm:w-48 sm:h-48 mb-6">
         <svg className="w-full h-full" viewBox="0 0 100 100">
           <circle className={currentStyle.ringBg} strokeWidth="10" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" />
           <circle
@@ -260,7 +260,7 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ assignments, cours
           />
         </svg>
         <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-          <span className={`text-5xl font-bold ${currentStyle.text}`}>
+          <span className={`text-4xl sm:text-5xl font-bold ${currentStyle.text}`}>
             {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
           </span>
         </div>
@@ -268,7 +268,7 @@ export const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ assignments, cours
       <div className="flex space-x-4 mb-4">
         <button
           onClick={toggleTimer}
-          className={`px-8 py-3 w-36 text-lg font-bold rounded-lg text-white transition-all duration-200 transform hover:scale-105 active:scale-100 ${
+          className={`px-6 sm:px-8 py-3 w-32 sm:w-36 text-base sm:text-lg font-bold rounded-lg text-white transition-all duration-200 transform hover:scale-105 active:scale-100 ${
             isActive ? 'bg-yellow-500 hover:bg-yellow-600' : `${currentModeStyle.button} hover:opacity-90`
           }`}
         >
