@@ -74,7 +74,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange 
         return;
     }
 
-    // A helper function to check if the current selection or its ancestor has a specific tag name or style
     const checkAncestor = (node: Node | null, condition: (element: HTMLElement) => boolean): boolean => {
         while (node && node !== editorRef.current) {
             if (node.nodeType === Node.ELEMENT_NODE) {
@@ -85,17 +84,19 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange 
         return false;
     };
     
+    const isBold = checkAncestor(container, el => ['B', 'STRONG'].includes(el.tagName) || (parseInt(window.getComputedStyle(el).fontWeight, 10) >= 700));
+    const isItalic = checkAncestor(container, el => ['I', 'EM'].includes(el.tagName) || window.getComputedStyle(el).fontStyle === 'italic');
+    const isUnderline = checkAncestor(container, el => ['U'].includes(el.tagName) || window.getComputedStyle(el).textDecorationLine === 'underline');
+    const isList = checkAncestor(container, el => ['UL', 'OL', 'LI'].includes(el.tagName));
     const isHighlighted = checkAncestor(container, el => {
         const bgColor = el.style.backgroundColor;
         return !!(bgColor && bgColor !== 'transparent' && bgColor !== 'rgba(0, 0, 0, 0)');
     });
 
-    const isList = checkAncestor(container, el => ['UL', 'OL', 'LI'].includes(el.nodeName));
-
     setCommandStates({
-      bold: document.queryCommandState('bold'),
-      italic: document.queryCommandState('italic'),
-      underline: document.queryCommandState('underline'),
+      bold: isBold,
+      italic: isItalic,
+      underline: isUnderline,
       ul: isList,
       highlight: isHighlighted,
     });

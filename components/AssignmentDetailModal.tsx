@@ -121,9 +121,9 @@ export const AssignmentDetailModal: FC<AssignmentDetailModalProps> = ({ isOpen, 
   const currentStatus = localStatus || assignment.status;
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="detail-modal-title" className={`fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
-      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl transform transition-all flex flex-col ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
-        <div className="p-8 pb-0">
+    <div role="dialog" aria-modal="true" aria-labelledby="detail-modal-title" className={`fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 ${isAnimatingOut ? 'animate-fade-out' : 'animate-fade-in'}`} onClick={handleClose}>
+      <div style={{ maxHeight: 'calc(var(--vh, 1vh) * 90)' }} className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl transform transition-all flex flex-col ${isAnimatingOut ? 'animate-scale-slide-down' : 'animate-scale-slide-up'}`} onClick={e => e.stopPropagation()}>
+        <div className="p-8 pb-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h2 id="detail-modal-title" className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{assignment.title}</h2>
@@ -144,8 +144,10 @@ export const AssignmentDetailModal: FC<AssignmentDetailModalProps> = ({ isOpen, 
                     <i className="fa-solid fa-times text-2xl"></i>
                 </button>
             </div>
-
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+        </div>
+        
+        <div className="p-8 overflow-y-auto flex-grow">
+             <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-6">
                 <div className="flex items-center">
                     <span className="font-semibold text-gray-700 dark:text-gray-300 mr-3">Priority:</span>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${priorityInfo.classes}`}>
@@ -182,17 +184,15 @@ export const AssignmentDetailModal: FC<AssignmentDetailModalProps> = ({ isOpen, 
                 </div>
             </div>
         
-            <div className="max-h-[45vh] overflow-y-auto pr-2 flex-grow">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Description</h3>
-                 <div
-                    dangerouslySetInnerHTML={{ __html: assignment.description }}
-                    className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
-                 />
-                 {!assignment.description && <p className="text-gray-500 italic">No description provided.</p>}
-            </div>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Description</h3>
+             <div
+                dangerouslySetInnerHTML={{ __html: assignment.description }}
+                className="prose dark:prose-invert max-w-none text-gray-700 dark:text-gray-300 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
+             />
+             {!assignment.description && <p className="text-gray-500 italic">No description provided.</p>}
         </div>
 
-        <div className={`mt-auto transition-colors duration-300 ${hasChanges ? '' : 'pt-6 border-t border-gray-200 dark:border-gray-700'}`}>
+        <div className={`mt-auto flex-shrink-0 transition-colors duration-300 ${hasChanges ? '' : 'pt-6 border-t border-gray-200 dark:border-gray-700'}`}>
             {!hasChanges ? (
                 <div className="flex justify-between items-center px-8 pb-8">
                     <button
