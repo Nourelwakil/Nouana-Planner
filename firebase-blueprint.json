@@ -1,0 +1,57 @@
+{
+  "entities": {
+    "Course": {
+      "title": "Course",
+      "description": "A course or subject the user is studying.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The name of the course." },
+        "color": { "type": "string", "description": "Hex color code for the course." },
+        "uid": { "type": "string", "description": "The user ID who owns this course." }
+      },
+      "required": ["name", "color", "uid"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "A study task or assignment.",
+      "type": "object",
+      "properties": {
+        "courseId": { "type": "string", "description": "ID of the associated course." },
+        "title": { "type": "string", "description": "Title of the task." },
+        "deadline": { "type": "string", "description": "Deadline date string." },
+        "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+        "completed": { "type": "boolean" },
+        "urgent": { "type": "boolean" },
+        "important": { "type": "boolean" },
+        "uid": { "type": "string", "description": "The user ID who owns this task." }
+      },
+      "required": ["courseId", "title", "uid", "completed"]
+    },
+    "PomodoroSettings": {
+      "title": "PomodoroSettings",
+      "description": "User preferences for the Pomodoro timer.",
+      "type": "object",
+      "properties": {
+        "workDuration": { "type": "number" },
+        "shortBreakDuration": { "type": "number" },
+        "longBreakDuration": { "type": "number" },
+        "color": { "type": "string" }
+      },
+      "required": ["workDuration", "shortBreakDuration", "longBreakDuration", "color"]
+    }
+  },
+  "firestore": {
+    "/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Collection of courses."
+    },
+    "/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Collection of tasks."
+    },
+    "/settings/{userId}": {
+      "schema": "PomodoroSettings",
+      "description": "User-specific settings."
+    }
+  }
+}

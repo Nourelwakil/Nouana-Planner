@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: courses
+    // Fields:
+    //   - name: string (required)
+    //   - color: string (required)
+    //   - uid: string (required, immutable)
+    //
+    // Collection: tasks
+    // Fields:
+    //   - courseId: string (required)
+    //   - title: string (required)
+    //   - deadline: string (optional)
+    //   - priority: string (required, enum: low, medium, high)
+    //   - completed: bool (required)
+    //   - urgent: bool (required)
+    //   - important: bool (required)
+    //   - uid: string (required, immutable)
+    //
+    // Collection: settings
+    // Fields:
+    //   - workDuration: number (required)
+    //   - shortBreakDuration: number (required)
+    //   - longBreakDuration: number (required)
+    //   - color: string (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidCourse(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.color is string && data.color.size() > 0 && data.color.size() < 20 &&
+             data.uid == request.auth.uid;
+    }
+
+    function isValidTask(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.courseId is string &&
+             data.priority in ['low', 'medium', 'high'] &&
+             data.completed is bool &&
+             data.urgent is bool &&
+             data.important is bool &&
+             data.uid == request.auth.uid;
+    }
+
+    function isValidSettings(data) {
+      return data.workDuration is number && data.workDuration > 0 &&
+             data.shortBreakDuration is number && data.shortBreakDuration > 0 &&
+             data.longBreakDuration is number && data.longBreakDuration > 0 &&
+             data.color is string && data.color.size() > 0;
+    }
+
+    match /courses/{courseId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && isValidCourse(request.resource.data) && uidUnchanged();
+      allow update: if isDocOwner() && isValidCourse(request.resource.data) && uidNotModified();
+      allow delete: if isDocOwner();
+    }
+
+    match /tasks/{taskId} {
+      allow read: if isDocOwner();
+      allow create: if isAuthenticated() && isValidTask(request.resource.data) && uidUnchanged();
+      allow update: if isDocOwner() && isValidTask(request.resource.data) && uidNotModified();
+      allow delete: if isDocOwner();
+    }
+
+    match /settings/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if isOwner(userId) && isValidSettings(request.resource.data);
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+  }
+}
